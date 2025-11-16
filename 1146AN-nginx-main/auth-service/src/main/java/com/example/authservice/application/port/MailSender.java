@@ -17,11 +17,11 @@ public interface MailSender {
     );
 
     /**
-     * Send password reset link email
-     * Requisito 3.3: Enviar e-mail com link para redefinicao de senha
+     * Send password reset verification code email
+     * Requisito 3.3: Enviar e-mail com codigo de verificacao para redefinicao de senha
      */
-    void sendPasswordResetLink(
+    void sendPasswordResetCode(
         String toEmail,
-        String resetUrl
+        String verificationCode
     );
 }

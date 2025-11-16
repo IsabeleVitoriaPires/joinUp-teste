@@ -66,13 +66,13 @@ public class AuthController {
     }
 
     /**
-     * Requisito 3.3: Confirm password reset with token
+     * Requisito 3.3: Confirm password reset with verification code
      * POST /auth/password/reset/confirm
-     * Body: { "token": "...", "newPassword": "..." }
+     * Body: { "code": "123456", "newPassword": "..." }
      */
     @PostMapping("/password/reset/confirm")
     public ResponseEntity<Void> confirmPasswordReset(@Valid @RequestBody ConfirmPasswordResetRequest req) {
-        confirmPasswordResetHandler.handle(req.token(), req.newPassword());
+        confirmPasswordResetHandler.handle(req.code(), req.newPassword());
         return ResponseEntity.ok().build();
     }
 }

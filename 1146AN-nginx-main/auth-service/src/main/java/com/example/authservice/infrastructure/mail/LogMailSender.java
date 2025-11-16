@@ -24,8 +24,11 @@ public class LogMailSender implements MailSender {
     }
 
     @Override
-    public void sendPasswordResetLink(String toEmail, String resetUrl) {
-        log.info("[DEV] Password Reset Link para {}: {}", toEmail, resetUrl);
-        log.info("[DEV] Use este link para redefinir sua senha: {}", resetUrl);
+    public void sendPasswordResetCode(String toEmail, String verificationCode) {
+        log.info("=================================================");
+        log.info("[DEV] Password Reset Code para: {}", toEmail);
+        log.info("[DEV] Codigo de Verificacao: {}", verificationCode);
+        log.info("[DEV] Este codigo expira em 15 minutos");
+        log.info("=================================================");
     }
 }

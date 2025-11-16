@@ -11,16 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 /**
- * Use Case: Confirm password reset with token
- * Requisito 3.3: Redefinicao de senha com token
+ * Use Case: Confirm password reset with verification code
+ * Requisito 3.3: Redefinicao de senha com codigo de verificacao
  *
  * Flow:
- * 1. Receive token and new password
- * 2. Find user by token
- * 3. Validate token expiration
+ * 1. Receive 6-digit code and new password
+ * 2. Find user by verification code
+ * 3. Validate code expiration
  * 4. Hash new password
  * 5. Update user password
- * 6. Clear reset token
+ * 6. Clear reset code
  */
 @Service
 @RequiredArgsConstructor
@@ -31,27 +31,27 @@ public class ConfirmPasswordResetHandler {
     private final PasswordHasher passwordHasher;
 
     @Transactional
-    public void handle(String token, String newPassword) {
-        log.info("Password reset confirmation with token: {}", token.substring(0, 8) + "...");
+    public void handle(String code, String newPassword) {
+        log.info("Password reset confirmation with code: {}", code);
 
-        // Find user by reset token
-        User user = userRepository.findByResetPasswordToken(token)
+        // Find user by reset code
+        User user = userRepository.findByResetPasswordToken(code)
                 .orElseThrow(() -> {
-                    log.warn("Invalid password reset token");
+                    log.warn("Invalid password reset code");
                     return new ResponseStatusException(
                             HttpStatus.UNAUTHORIZED,
-                            "Token invalido ou expirado"
+                            "Codigo invalido ou expirado"
                     );
                 });
 
-        // Validate token expiration
+        // Validate code expiration
         if (!user.isResetPasswordTokenValid()) {
-            log.warn("Expired password reset token for user: {}", user.getEmail().getValue());
+            log.warn("Expired password reset code for user: {}", user.getEmail().getValue());
             user.clearResetPasswordToken();
             userRepository.save(user);
             throw new ResponseStatusException(
                     HttpStatus.UNAUTHORIZED,
-                    "Token expirado. Solicite um novo reset de senha"
+                    "Codigo expirado. Solicite um novo reset de senha"
             );
         }
 
@@ -61,7 +61,7 @@ public class ConfirmPasswordResetHandler {
         // Update user password
         user.setPassword(hashedPassword);
 
-        // Clear reset token
+        // Clear reset code
         user.clearResetPasswordToken();
 
         userRepository.save(user);
