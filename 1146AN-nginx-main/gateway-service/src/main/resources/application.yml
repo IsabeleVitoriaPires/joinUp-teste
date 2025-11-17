@@ -48,20 +48,6 @@ spring:
           predicates:
             - Path=/api/tickets/**
 
-      # Enable CORS
-      globalcors:
-        cors-configurations:
-          '[/**]':
-            allowedOrigins: "*"
-            allowedMethods:
-              - GET
-              - POST
-              - PUT
-              - DELETE
-              - OPTIONS
-            allowedHeaders: "*"
-            allowCredentials: false
-
 # Eureka Client Configuration
 eureka:
   client:
