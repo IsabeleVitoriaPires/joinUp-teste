@@ -19,7 +19,7 @@ if errorlevel 1 (
 echo.
 echo [1/5] Compilando Service Discovery (Eureka)...
 cd /d "C:\Users\isabe\sistema_eventos\1146AN-nginx-main\service-discovery"
-call mvnw clean package -DskipTests
+call mvnw.cmd clean package -DskipTests
 if errorlevel 1 (
     echo ERRO ao compilar Service Discovery!
     pause
@@ -29,7 +29,7 @@ if errorlevel 1 (
 echo.
 echo [2/5] Compilando Auth Service...
 cd /d "C:\Users\isabe\sistema_eventos\1146AN-nginx-main\auth-service"
-call mvnw clean package -DskipTests
+call mvnw.cmd clean package -DskipTests
 if errorlevel 1 (
     echo ERRO ao compilar Auth Service!
     pause
@@ -39,7 +39,7 @@ if errorlevel 1 (
 echo.
 echo [3/5] Compilando Event Service...
 cd /d "C:\Users\isabe\sistema_eventos\1146AN-nginx-main\event-service"
-call mvnw clean package -DskipTests
+call mvnw.cmd clean package -DskipTests
 if errorlevel 1 (
     echo ERRO ao compilar Event Service!
     pause
@@ -49,7 +49,7 @@ if errorlevel 1 (
 echo.
 echo [4/5] Compilando Ticket Service...
 cd /d "C:\Users\isabe\sistema_eventos\1146AN-nginx-main\ticket-service"
-call mvnw clean package -DskipTests
+call mvnw.cmd clean package -DskipTests
 if errorlevel 1 (
     echo ERRO ao compilar Ticket Service!
     pause
@@ -59,7 +59,7 @@ if errorlevel 1 (
 echo.
 echo [5/5] Compilando Gateway Service...
 cd /d "C:\Users\isabe\sistema_eventos\1146AN-nginx-main\gateway-service"
-call mvnw clean package -DskipTests
+call mvnw.cmd clean package -DskipTests
 if errorlevel 1 (
     echo ERRO ao compilar Gateway Service!
     pause
