@@ -3,6 +3,13 @@ spring:
     name: gateway-service
   cloud:
     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            maxAge: 3600
       routes:
         # Auth Service - Register
         - id: auth-register
@@ -42,11 +49,19 @@ spring:
           predicates:
             - Path=/api/events/**, /api/organizer/**, /api/dashboard/**
 
-        # Ticket Service Routes
+        # Ticket Service - Purchase (specific route with rewrite)
+        - id: ticket-purchase
+          uri: lb://TICKET-SERVICE
+          predicates:
+            - Path=/api/tickets/purchase
+          filters:
+            - RewritePath=/api/tickets/purchase, /api/purchases
+
+        # Ticket Service - General Routes
         - id: ticket-service
           uri: lb://TICKET-SERVICE
           predicates:
-            - Path=/api/tickets/**
+            - Path=/api/tickets/**, /api/purchases/**
 
 # Eureka Client Configuration
 eureka:
