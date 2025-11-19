@@ -18,7 +18,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/organizer/events")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class OrganizerEventController {
 
     private final CreateEventHandler createEventHandler;

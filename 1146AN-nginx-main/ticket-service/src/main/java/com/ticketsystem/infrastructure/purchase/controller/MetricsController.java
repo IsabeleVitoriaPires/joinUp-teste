@@ -17,7 +17,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/metrics")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class MetricsController {
 
     private final GetEventMetricsHandler getEventMetricsHandler;

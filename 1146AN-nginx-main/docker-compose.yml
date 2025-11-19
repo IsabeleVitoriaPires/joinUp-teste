@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # PostgreSQL para Auth Service
   postgres-auth:
@@ -86,9 +84,6 @@ services:
     container_name: service-discovery
     ports:
       - "8761:8080"
-    volumes:
-      - ./service-discovery:/app
-      - ~/.m2:/root/.m2
     networks:
       - app-network
 
@@ -105,9 +100,6 @@ services:
       - SPRING_DATASOURCE_USERNAME=auth_user
       - SPRING_DATASOURCE_PASSWORD=auth_pass
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    volumes:
-      - ./auth-service:/app
-      - ~/.m2:/root/.m2
     depends_on:
       postgres-auth:
         condition: service_healthy
@@ -129,9 +121,6 @@ services:
       - SPRING_DATASOURCE_PASSWORD=events_pass
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://service-discovery:8080/eureka
-    volumes:
-      - ./event-service:/app
-      - ~/.m2:/root/.m2
     depends_on:
       postgres-events:
         condition: service_healthy
@@ -149,9 +138,6 @@ services:
     environment:
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://service-discovery:8080/eureka
       - JWT_SECRET=UmaSenhaBemLongaParaNossaAplicacao
-    volumes:
-      - ./gateway-service:/app
-      - ~/.m2:/root/.m2
     depends_on:
       - service-discovery
       - auth-service
@@ -172,9 +158,6 @@ services:
       - SPRING_DATASOURCE_USERNAME=tickets_user
       - SPRING_DATASOURCE_PASSWORD=tickets_pass
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    volumes:
-      - ./ticket-service:/app
-      - ~/.m2:/root/.m2
     depends_on:
       postgres-tickets:
         condition: service_healthy

@@ -62,6 +62,10 @@ public class AuthorizationFilter implements WebFilter {
 
     private Mono<Void> unauthorized(ServerWebExchange exchange) {
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+        // Adicionar headers CORS para que o navegador mostre o erro 401 corretamente
+        exchange.getResponse().getHeaders().add("Access-Control-Allow-Origin", "*");
+        exchange.getResponse().getHeaders().add("Access-Control-Allow-Methods", "*");
+        exchange.getResponse().getHeaders().add("Access-Control-Allow-Headers", "*");
         return exchange.getResponse().setComplete();
     }
     
@@ -69,6 +73,11 @@ public class AuthorizationFilter implements WebFilter {
     public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
         ServerHttpRequest request = exchange.getRequest();
         String path = request.getPath().toString();
+
+        // Permitir requisições OPTIONS (preflight CORS) sem autenticação
+        if ("OPTIONS".equals(request.getMethod().name())) {
+            return chain.filter(exchange);
+        }
 
         // verifica se a rota existe na nossa lista de rotas protegidas
         if (routeRole.entrySet().stream().noneMatch(entry -> path.startsWith(entry.getKey()))) {
@@ -106,6 +115,10 @@ public class AuthorizationFilter implements WebFilter {
 
         if (!isAuthorized(path, role)) {
             exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+            // Adicionar headers CORS para que o navegador mostre o erro 403 corretamente
+            exchange.getResponse().getHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponse().getHeaders().add("Access-Control-Allow-Methods", "*");
+            exchange.getResponse().getHeaders().add("Access-Control-Allow-Headers", "*");
             return exchange.getResponse().setComplete();
         }
 

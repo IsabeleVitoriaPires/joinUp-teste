@@ -16,12 +16,12 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/events")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class PublicEventController {
 
     private final ListEventsHandler listEventsHandler;
     private final GetEventByIdHandler getEventByIdHandler;
     private final SearchEventsHandler searchEventsHandler;
+    private final ReserveTicketsHandler reserveTicketsHandler;
 
     /**
      * Requisito 1: List all events (public access)
@@ -52,5 +52,18 @@ public class PublicEventController {
             @RequestParam(value = "q", required = false) String searchTerm) {
         List<EventResponseDTO> events = searchEventsHandler.execute(searchTerm);
         return ResponseEntity.ok(events);
+    }
+
+    /**
+     * Reserve tickets for an event (public access)
+     * PATCH /api/events/{id}/reserve
+     * Called by ticket-service when a purchase is made
+     */
+    @PatchMapping("/{id}/reserve")
+    public ResponseEntity<EventResponseDTO> reserveTickets(
+            @PathVariable UUID id,
+            @RequestBody ReserveTicketsRequestDTO request) {
+        EventResponseDTO event = reserveTicketsHandler.execute(id, request.getQuantity());
+        return ResponseEntity.ok(event);
     }
 }
