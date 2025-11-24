@@ -118,7 +118,7 @@ public class CreatePurchaseHandler {
 
         // Step 8: Confirm purchase
         savedPurchase.confirm();
-        purchaseRepository.save(savedPurchase);
+        savedPurchase = purchaseRepository.save(savedPurchase);
         log.info("Purchase confirmed: {}", savedPurchase.getPurchaseCode());
 
         return PurchaseResponseDTO.fromDomain(savedPurchase);

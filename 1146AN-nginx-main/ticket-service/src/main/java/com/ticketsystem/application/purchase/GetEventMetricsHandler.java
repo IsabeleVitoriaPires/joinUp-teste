@@ -33,8 +33,10 @@ public class GetEventMetricsHandler {
         // Get total revenue (sum of total amounts from confirmed purchases)
         BigDecimal totalRevenue = purchaseRepository.sumTotalAmountByEventId(eventId);
 
-        // Get total number of purchases
-        Long totalPurchases = (long) purchaseRepository.findByEventId(eventId).size();
+        // Get total number of CONFIRMED purchases only
+        Long totalPurchases = (long) purchaseRepository.findByEventId(eventId).stream()
+                .filter(p -> "CONFIRMED".equals(p.getStatus().name()))
+                .count();
 
         log.info("Event {} metrics: {} tickets sold, revenue: {}, {} purchases",
                 eventId, totalTicketsSold, totalRevenue, totalPurchases);

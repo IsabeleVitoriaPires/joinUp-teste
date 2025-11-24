@@ -60,28 +60,50 @@ public class EventServiceClientImpl implements EventServiceClient {
     public void reserveTickets(UUID eventId, int quantity) {
         log.info("Reserving {} tickets for event {}", quantity, eventId);
 
-        // First, fetch the event to check available tickets
-        EventDTO event = getEvent(eventId);
+        try {
+            WebClient webClient = webClientBuilder.baseUrl(eventServiceUrl).build();
 
-        if (!event.hasAvailableTickets(quantity)) {
-            log.error("Insufficient tickets for event {}. Requested: {}, Available: {}",
-                    eventId, quantity, event.getAvailableTickets());
-            throw new InsufficientTicketsException(
-                    String.format("Insufficient tickets. Requested: %d, Available: %d",
-                            quantity, event.getAvailableTickets())
-            );
+            // Create request body
+            ReserveTicketsRequest request = new ReserveTicketsRequest(quantity);
+
+            webClient.patch()
+                    .uri("/api/events/{id}/reserve", eventId)
+                    .bodyValue(request)
+                    .retrieve()
+                    .onStatus(status -> status == HttpStatus.NOT_FOUND,
+                            response -> Mono.error(new EventNotFoundException("Event not found: " + eventId)))
+                    .onStatus(status -> status == HttpStatus.BAD_REQUEST,
+                            response -> Mono.error(new InsufficientTicketsException(
+                                    "Insufficient tickets for event " + eventId)))
+                    .bodyToMono(Void.class)
+                    .block();
+
+            log.info("Tickets reserved successfully for event {}", eventId);
+
+        } catch (WebClientResponseException.NotFound e) {
+            log.error("Event {} not found", eventId);
+            throw new EventNotFoundException("Event not found with id: " + eventId);
+        } catch (WebClientResponseException.BadRequest e) {
+            log.error("Insufficient tickets for event {}", eventId);
+            throw new InsufficientTicketsException("Insufficient tickets for event " + eventId);
+        } catch (Exception e) {
+            log.error("Error reserving tickets for event {}: {}", eventId, e.getMessage());
+            throw new RuntimeException("Error communicating with event-service: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Internal DTO for reserve tickets request
+     */
+    private static class ReserveTicketsRequest {
+        private final int quantity;
+
+        public ReserveTicketsRequest(int quantity) {
+            this.quantity = quantity;
         }
 
-        log.info("Tickets reserved successfully for event {}", eventId);
-
-        /*
-         * Note: In a real production system, this would make a PATCH/PUT request
-         * to event-service to actually reserve the tickets in the database.
-         * For now, we're just validating availability.
-         *
-         * TODO: Implement actual ticket reservation endpoint in event-service:
-         * PATCH /api/organizer/events/{id}/reserve
-         * Body: { "quantity": 5 }
-         */
+        public int getQuantity() {
+            return quantity;
+        }
     }
 }
